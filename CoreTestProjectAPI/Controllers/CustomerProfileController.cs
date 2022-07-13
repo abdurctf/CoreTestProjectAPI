@@ -264,8 +264,8 @@ namespace CoreTestProjectAPI.Controllers
                 var objcustomerDTO = JsonConvert.DeserializeObject<CUSTOMER_PROFILE_MAP>(objRequest.BusinessData.ToString());
                 string result = _customer_ProfileBLL.SaveCustomerProfileWithDetails(objcustomerDTO);
                 if (result == "Saved")
-                {
-                    objResponse = CommonAPIFormat.CreateAPIResponseWithBizData(objRequest, objcustomerDTO, "Data Saved Successfully");
+                  {
+                      objResponse = CommonAPIFormat.CreateAPIResponseWithBizData(objRequest, objcustomerDTO, "Data Saved Successfully");
                     return Ok(objResponse);
                 }
                 else if (result == "Updated")
@@ -288,6 +288,6 @@ namespace CoreTestProjectAPI.Controllers
                 return BadRequest(objResponse);
             }
 
-        }
+           }
     }
 }

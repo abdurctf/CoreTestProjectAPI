@@ -1,4 +1,6 @@
-﻿using Core.TestProjectModels.Entities;
+﻿using Authorization.AuthDBAccess.NFT.Contracts;
+using Core.TestProjectModels.Entities;
+using Dapper;
 using DBAccessor.Contracts;
 using DBContext;
 using DBContext.ContextHelper;
@@ -7,13 +9,10 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
-using Utilities.Helpers;
-using Dapper;
 using System.Linq;
-using Utilities.Models;
 using Utilities.Common;
-using Authorization.AuthDBAccess.NFT.Contracts;
+using Utilities.Helpers;
+using Utilities.Models;
 
 namespace DBAccessor.Repositories
 {
@@ -124,7 +123,7 @@ namespace DBAccessor.Repositories
                             objcustomer.customer_id = param.Get<string>("pcustomer_id");
                             actionStatus = "ADD";
                             remarks = "CustomerID";
-                            
+
                             transaction.Commit();
                             objcustomer.IsRequestSuccess = true;
                         }
@@ -191,7 +190,7 @@ namespace DBAccessor.Repositories
 
                             }
                             else
-                            {                                
+                            {
                                 transaction.Commit();
                                 objcustomer.IsRequestSuccess = true;
                             }
@@ -214,7 +213,7 @@ namespace DBAccessor.Repositories
         }
 
         public string SaveCustomerProfileNFT(CUSTOMER_PROFILE objcustomer, AuthParam authParam)
-         {
+        {
 
             string vMsg = string.Empty;
             var actionStatus = string.Empty;
@@ -240,7 +239,7 @@ namespace DBAccessor.Repositories
                         param.Add("perrorcode", OracleDbType.NVarchar2, ParameterDirection.Output, size: 32000);
                         param.Add("perrormassage", OracleDbType.NVarchar2, ParameterDirection.Output, size: 32000);
 
-                        string query = _appSettings.SpPrefix +  "customer.customer_profile_i";
+                        string query = _appSettings.SpPrefix + "customer.customer_profile_i";
                         _dbConnection.Db.Query(query, param, commandType: CommandType.StoredProcedure);
 
                         objcustomer.Error_Msg = param.Get<string>("perrormassage");
@@ -398,7 +397,7 @@ namespace DBAccessor.Repositories
 
                                 objcustomer.Error_Msg = param.Get<string>("perrormassage");
 
-                                if (string.IsNullOrEmpty(obj.Error_Msg) && obj.Error_Msg != "null")
+                                if (!string.IsNullOrEmpty(obj.Error_Msg) && obj.Error_Msg != "null")
                                 {
 
                                     if (!string.IsNullOrEmpty(objcustomer.customer_id))
@@ -457,9 +456,9 @@ namespace DBAccessor.Repositories
                             _dbConnection.Db.Query(query, param, commandType: CommandType.StoredProcedure);
 
                             objcustomer.Error_Msg = param.Get<string>("perrormassage");
-                             if (string.IsNullOrEmpty(objcustomer.Error_Msg) && objcustomer.Error_Msg == "null")
+                            if (string.IsNullOrEmpty(objcustomer.Error_Msg) || objcustomer.Error_Msg == "null")
                             {
-                                if (string.IsNullOrEmpty(objcustomer.customer_id))
+                                if (!string.IsNullOrEmpty(objcustomer.customer_id))
                                 {
                                     if (objcustomer.Obj_Customer_Introducer == null)
                                     {
@@ -476,8 +475,7 @@ namespace DBAccessor.Repositories
                                     }
                                 }
 
-                                vMsg = "Updated";
-                                transaction.Commit();
+                                
                                 //return vMsg;
                                 //}
                                 // else
@@ -497,6 +495,8 @@ namespace DBAccessor.Repositories
 
                         }
                     }
+                    vMsg = "Updated";
+                    transaction.Commit();
                     return vMsg;
                 }
                 catch (Exception ex)
